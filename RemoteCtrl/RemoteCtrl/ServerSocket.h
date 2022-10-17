@@ -12,8 +12,14 @@ public:
 		sHead = 0xFEFF;
 		nLength = nSize + 4;
 		sCmd = nCmd;
-		strData.resize(nSize);
-		memcpy((void*)strData.c_str(),pData,nSize);
+		if (nSize > 0) {
+			strData.resize(nSize);
+			memcpy((void*)strData.c_str(), pData, nSize);
+		}
+		else {
+			strData.clear();
+		}
+
 		sSum = 0;
 		for (size_t j = 0; j < strData.size(); j++) {
 			sSum += BYTE(strData[j]) & 0xFF;
@@ -142,13 +148,13 @@ public:
 		memset(buffer, 0, BUFFER_SIZE);
 		size_t index = 0;
 		while (true) {
-			size_t len = recv(m_client, buffer+index, BUFFER_SIZE -index, 0);
+			size_t len = recv(m_client, buffer + index, BUFFER_SIZE - index, 0);
 			if (len <= 0) {
 				return -1;
 			}
 			index += len;
 			len = index;
-			m_packet=CPacket((BYTE*)buffer, len);
+			m_packet = CPacket((BYTE*)buffer, len);
 			if (len > 0) {
 				memmove(buffer, buffer + len, BUFFER_SIZE - len);
 				index -= len;
@@ -167,12 +173,12 @@ public:
 		return send(m_client, pack.Data(), pack.size(), 0) > 0;
 	}
 	bool GetFilePath(std::string& strPath) {
-		if (m_packet.sCmd == 2) {
+		if ((m_packet.sCmd >= 2)&&(m_packet.sCmd <= 4)) {
 			strPath = m_packet.strData;
 			return true;
 		}
 		return false;
-		
+
 	}
 
 private:

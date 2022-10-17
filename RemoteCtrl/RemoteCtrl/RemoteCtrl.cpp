@@ -28,7 +28,7 @@ void Dump(BYTE* pData, size_t nSize) {
 		if (i > 0 && (i % 16 == 0)) {
 			strOut += "\n";
 		}
-		snprintf(buf, sizeof(buf), "%02X ", pData[i]& 0xFF);
+		snprintf(buf, sizeof(buf), "%02X ", pData[i] & 0xFF);
 		strOut += buf;
 	}
 	strOut += "\n";
@@ -53,7 +53,7 @@ int MakeDriverInfo() {//1==>A 2==>B 3==>C ... 26==>Z
 #include<stdio.h>
 #include <io.h>
 #include <list>
-typedef struct file_info{
+typedef struct file_info {
 	file_info() {
 		IsInvalid = FALSE;
 		IsDirectory = -1;
@@ -64,7 +64,7 @@ typedef struct file_info{
 	BOOL IsDirectory;//是否为目录 0 否 1 是
 	BOOL HasNext;//是否还有后续 0 没有 1 有
 	char szFileName[256];//文件名
-}FILEINFO,*PFILEINFO;
+}FILEINFO, * PFILEINFO;
 
 int MakeDirectcryInfo() {
 	std::string strPath;
@@ -73,21 +73,21 @@ int MakeDirectcryInfo() {
 		OutputDebugString(_T("当前的命令不是获取文件列表，命令解析错误！"));
 		return -1;
 	}
-	if (_chdir(strPath.c_str())!=0) {
+	if (_chdir(strPath.c_str()) != 0) {
 		FILEINFO finfo;
 		finfo.IsInvalid = TRUE;
 		finfo.IsDirectory = TRUE;
 		finfo.HasNext = FALSE;
 		memcpy(finfo.szFileName, strPath.c_str(), strPath.size());
 		//lstFileInfos.push_back(finfo);
-		CPacket pack(2,(BYTE*)&finfo, sizeof(finfo));
+		CPacket pack(2, (BYTE*)&finfo, sizeof(finfo));
 		CServerSocket::getInstance()->Send(pack);
 		OutputDebugString(_T("没有权限，访问目录！"));
 		return -2;
 	}
 	_finddata_t fdata;
 	int hfind = 0;
-	if ((hfind=_findfirst("*", &fdata)) == -1) {
+	if ((hfind = _findfirst("*", &fdata)) == -1) {
 		OutputDebugString(_T("没有找到任何文件！"));
 		return -3;
 	}
@@ -103,6 +103,45 @@ int MakeDirectcryInfo() {
 	FILEINFO finfo;
 	finfo.HasNext = FALSE;
 	CPacket pack(2, (BYTE*)&finfo, sizeof(finfo));
+	CServerSocket::getInstance()->Send(pack);
+	return 0;
+}
+
+int RunFile() {
+	std::string strPath;
+	CServerSocket::getInstance()->GetFilePath(strPath);
+	ShellExecuteA(NULL, NULL, strPath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	CPacket pack(3, NULL, 0);
+	CServerSocket::getInstance()->Send(pack);
+	return 0;
+}
+//#pragma warning(disable:4996)//fopen sprintf strcpy strstr
+int DownloadFile() {
+	std::string strPath;
+	CServerSocket::getInstance()->GetFilePath(strPath);
+	long long data = 0;
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, strPath.c_str(), "rb");
+	if (err != 0) {
+		CPacket pack(4, (BYTE*)&data, 8);
+		CServerSocket::getInstance()->Send(pack);
+		return -1;
+	}
+	if (pFile != NULL) {
+		fseek(pFile, 0, SEEK_END);
+		data = _ftelli64(pFile);
+		CPacket head(4, (BYTE*)&data, 8);
+		fseek(pFile, 0, SEEK_SET);
+		char buffer[1024] = "";
+		size_t rlen = 0;
+		do {
+			rlen = fread(buffer, 1, 1024, pFile);
+			CPacket pack(4, (BYTE*)buffer, rlen);
+			CServerSocket::getInstance()->Send(pack);
+		} while (rlen >= 1024);
+		fclose(pFile);
+	}
+	CPacket pack(4, NULL, 0);
 	CServerSocket::getInstance()->Send(pack);
 	return 0;
 }
@@ -154,8 +193,14 @@ int main()
 			case 2://查看指定目录下的文件
 				MakeDirectcryInfo();
 				break;
+			case 3://打开文件
+				RunFile();
+				break;
+			case 4://下载文件
+				DownloadFile();
+				break;
 			}
-			
+
 		}
 	}
 	else

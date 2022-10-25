@@ -38,7 +38,7 @@ void Dump(BYTE* pData, size_t nSize) {
 
 int MakeDriverInfo() {//1==>A 2==>B 3==>C ... 26==>Z
 	std::string result;
-	for (int i = 0; i <= 26; i++) {
+	for (int i = 1; i <= 26; i++) {
 		if (_chdrive(i) == 0) {
 			if (result.size() > 0) {
 				result += ',';
@@ -54,18 +54,7 @@ int MakeDriverInfo() {//1==>A 2==>B 3==>C ... 26==>Z
 #include<stdio.h>
 #include <io.h>
 #include <list>
-typedef struct file_info {
-	file_info() {
-		IsInvalid = FALSE;
-		IsDirectory = -1;
-		HasNext = TRUE;
-		memset(szFileName, 0, sizeof(szFileName));
-	}
-	BOOL IsInvalid;//是否有效
-	BOOL IsDirectory;//是否为目录 0 否 1 是
-	BOOL HasNext;//是否还有后续 0 没有 1 有
-	char szFileName[256];//文件名
-}FILEINFO, * PFILEINFO;
+
 
 int MakeDirectcryInfo() {
 	std::string strPath;
@@ -76,11 +65,7 @@ int MakeDirectcryInfo() {
 	}
 	if (_chdir(strPath.c_str()) != 0) {
 		FILEINFO finfo;
-		finfo.IsInvalid = TRUE;
-		finfo.IsDirectory = TRUE;
 		finfo.HasNext = FALSE;
-		memcpy(finfo.szFileName, strPath.c_str(), strPath.size());
-		//lstFileInfos.push_back(finfo);
 		CPacket pack(2, (BYTE*)&finfo, sizeof(finfo));
 		CServerSocket::getInstance()->Send(pack);
 		OutputDebugString(_T("没有权限，访问目录！"));
@@ -90,13 +75,17 @@ int MakeDirectcryInfo() {
 	int hfind = 0;
 	if ((hfind = _findfirst("*", &fdata)) == -1) {
 		OutputDebugString(_T("没有找到任何文件！"));
+		FILEINFO finfo;
+		finfo.HasNext = FALSE;
+		CPacket pack(2, (BYTE*)&finfo, sizeof(finfo));
+		CServerSocket::getInstance()->Send(pack);
 		return -3;
 	}
 	do {
 		FILEINFO finfo;
 		finfo.IsDirectory = (fdata.attrib & _A_SUBDIR) != 0;
 		memcpy(finfo.szFileName, fdata.name, strlen(fdata.name));
-		//lstFileInfos.push_back(finfo);
+		TRACE("%s\r\n",finfo.szFileName);
 		CPacket pack(2, (BYTE*)&finfo, sizeof(finfo));
 		CServerSocket::getInstance()->Send(pack);
 	} while (!_findnext(hfind, &fdata));
@@ -289,7 +278,7 @@ unsigned __stdcall threadLockDlg(void* arg) {
 	rect.top = 0;
 	rect.right = GetSystemMetrics(SM_CXFULLSCREEN);
 	rect.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
-	rect.bottom *= 1.08;
+	rect.bottom=LONG(rect.bottom * 1.08);
 	TRACE("right=%d botton = %d\r\n", rect.right, rect.bottom);
 	dlg.MoveWindow(rect);
 	//dlg.SetWindowPos(&dlg.wndTopMost, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);//限制鼠标的功能

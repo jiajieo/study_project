@@ -331,8 +331,22 @@ int UnlockMachine() {
 }
 
 int TestConnect() {
+	
 	CPacket pack(1981, NULL, 0);
 	bool ret=CServerSocket::getInstance()->Send(pack);
+	TRACE("Send ret=%d\r\n", ret);
+	return 0;
+}
+
+int DeleteLocalFile() {
+	std::string strPath;
+	CServerSocket::getInstance()->GetFilePath(strPath);
+	TCHAR sPath[MAX_PATH] = _T("");
+	//mbstowcs(sPath, strPath.c_str(), strPath.size());//中文容易乱码
+	MultiByteToWideChar(CP_ACP, 0, strPath.c_str(), strPath.size(), sPath, sizeof(sPath) / sizeof(TCHAR));
+	DeleteFileA(strPath.c_str());
+	CPacket pack(9, NULL, 0);
+	bool ret = CServerSocket::getInstance()->Send(pack);
 	TRACE("Send ret=%d\r\n", ret);
 	return 0;
 }
@@ -364,6 +378,9 @@ int ExcuteCommand(int nCmd) {
 		break;
 	case 8://解锁
 		ret = UnlockMachine();
+		break;
+	case 9://删除文件
+		ret = DeleteLocalFile();
 		break;
 	case 1981:
 		ret = TestConnect();

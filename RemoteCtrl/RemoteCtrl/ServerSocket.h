@@ -205,7 +205,7 @@ public:
 	}
 	bool Send(CPacket& pack) {
 		if (m_client == -1)return false;
-		Dump((BYTE*)pack.Data(), pack.size());
+		//Dump((BYTE*)pack.Data(), pack.size());
 		return send(m_client, pack.Data(), pack.size(), 0) > 0;
 	}
 	bool GetFilePath(std::string& strPath) {

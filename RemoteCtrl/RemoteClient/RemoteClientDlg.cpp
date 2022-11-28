@@ -246,7 +246,6 @@ void CRemoteClientDlg::threadWatchData()
 		if (m_isFull == false) {//更新数据到缓存
 			int ret = SendMessage(WM_SEND_PACKET, 6 << 1 | 1);
 			if (ret == 6) {
-
 				BYTE* pData = (BYTE*)pClient->GetPacket().strData.c_str();
 				HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, 0);
 				if (hMem == NULL) {

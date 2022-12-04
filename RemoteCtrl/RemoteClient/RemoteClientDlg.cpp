@@ -372,7 +372,7 @@ void CRemoteClientDlg::LoadFileInfo()
 	CClientSocket* pClient = CClientSocket::getInstance();
 	int Count = 0;
 	while (pInfo->HasNext) {
-		TRACE("[%s] isdir %d\r\n", pInfo->szFileName, pInfo->IsDirectory);
+		TRACE("[%s] isdir %d\r\n", pInfo->szFileName, pInfo->IsDirectory);                                                                                                                                                                                       
 		if (pInfo->IsDirectory) {
 			if ((CString(pInfo->szFileName) == ".") || (CString(pInfo->szFileName) == "..")) {
 				int cmd = pClient->DealCommand();
@@ -503,6 +503,11 @@ LRESULT CRemoteClientDlg::OnSendPacket(WPARAM wParam, LPARAM lParam)
 	{
 		CString strFile = (LPCSTR)lParam;
 		ret = SendCommandPacket(cmd, wParam & 1, (BYTE*)(LPCSTR)strFile, strFile.GetLength());
+	}
+	break;
+	case 5:
+	{//鼠标操作
+		ret = SendCommandPacket(cmd, wParam & 1, (BYTE*)lParam, sizeof(MOUSEEV));
 	}
 	break;
 	case 6:

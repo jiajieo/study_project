@@ -12,7 +12,7 @@ class CPacket
 {
 public:
 	CPacket() :sHead(0), nLength(0), sCmd(0), sSum(0) {}
-	CPacket(WORD nCmd, const BYTE* pData, size_t nSize,HANDLE hEvent) {
+	CPacket(WORD nCmd, const BYTE* pData, size_t nSize, HANDLE hEvent) {
 		sHead = 0xFEFF;
 		nLength = nSize + 4;
 		sCmd = nCmd;
@@ -37,7 +37,7 @@ public:
 		sSum = pack.sSum;
 		hEvent = pack.hEvent;
 	}
-	CPacket(const BYTE* pData, size_t& nSize):hEvent(INVALID_HANDLE_VALUE){
+	CPacket(const BYTE* pData, size_t& nSize) :hEvent(INVALID_HANDLE_VALUE) {
 		size_t i = 0;
 		for (; i < nSize; i++) {
 			if (*(WORD*)(pData + i) == 0xFEFF) {
@@ -61,7 +61,7 @@ public:
 		if (nLength > 4) {
 			strData.resize(nLength - 2 - 2);
 			memcpy((void*)strData.c_str(), pData + i, nLength - 4);
-			TRACE("%s\r\n", strData.c_str()+12);
+			TRACE("%s\r\n", strData.c_str() + 12);
 			i += nLength - 4;
 		}
 		sSum = *(WORD*)(pData + i);
@@ -91,7 +91,7 @@ public:
 	int size() {//包数据的大小
 		return nLength + 6;
 	}
-	const char* Data(std::string& strOut) const{
+	const char* Data(std::string& strOut) const {
 		strOut.resize(nLength + 6);
 		BYTE* pData = (BYTE*)strOut.c_str();
 		*(WORD*)pData = sHead; pData += 2;
@@ -167,7 +167,7 @@ public:
 			AfxMessageBox("指定的IP地址，不存在！");
 			return false;
 		}
-		int ret=connect(m_sock, (sockaddr*)&serv_adr, sizeof(serv_adr));
+		int ret = connect(m_sock, (sockaddr*)&serv_adr, sizeof(serv_adr));
 		if (ret == -1) {
 			AfxMessageBox("连接失败");
 			TRACE("连接失败:%d %s\r\n", WSAGetLastError(), GetErrInfo(WSAGetLastError()).c_str());
@@ -179,15 +179,15 @@ public:
 #define BUFFER_SIZE 2048000
 	int DealCommand() {
 		if (m_sock == -1)return -1;
-		char* buffer =m_buffer.data();//TODO:多线程发送命令时可能会出现冲突
+		char* buffer = m_buffer.data();//TODO:多线程发送命令时可能会出现冲突
 		static size_t index = 0;
 		while (true) {
 			size_t len = recv(m_sock, buffer + index, BUFFER_SIZE - index, 0);
-			if (((int)len <= 0)&&((int)index<=0)) {
+			if (((int)len <= 0) && ((int)index <= 0)) {
 				return -1;
 			}
-			TRACE("recv len=%d(0x%08X)  index=%d(0x%08X)\r\n",len, len,index, index);
-			index += len; 
+			TRACE("recv len=%d(0x%08X)  index=%d(0x%08X)\r\n", len, len, index, index);
+			index += len;
 			len = index;
 			TRACE("recv len=%d(0x%08X)  index=%d(0x%08X)\r\n", len, len, index, index);
 			m_packet = CPacket((BYTE*)buffer, len);
@@ -201,16 +201,26 @@ public:
 		return -1;
 	}
 
-	bool Send(const char* pData, int nSize) {
-		if (m_sock == -1)return false;
-		return send(m_sock, pData, nSize, 0) > 0;
-	}
-	bool Send(const CPacket& pack) {
-		TRACE("m_aock=%d\r\n", m_sock);
-		if (m_sock == -1)return false;
-		std::string strOut;
-		pack.Data(strOut);
-		return send(m_sock, strOut.c_str(), strOut.size(), 0) > 0;
+
+	bool SendPacket(const CPacket& pack, std::list<CPacket>& lstPacks) {
+		if (m_sock == INVALID_SOCKET) {
+			if (InitSocket() == false)
+				return false;
+			_beginthread(&CClientSocket::threadEntry, 0, this);
+		}
+		m_lstSend.push_back(pack);
+		WaitForSingleObject(pack.hEvent, INFINITE);
+		std::map<HANDLE, std::list<CPacket>>::iterator it;
+		it = m_mapAck.find(pack.hEvent);
+		if (it != m_mapAck.end()) {
+			std::list<CPacket>::iterator i;
+			for (i = it->second.begin(); i != it->second.end(); i++) {
+				lstPacks.push_back(*i);
+			}
+			m_mapAck.erase(it);
+			return true;
+		}
+		return false;
 	}
 	bool GetFilePath(std::string& strPath) {
 		if ((m_packet.sCmd >= 2) && (m_packet.sCmd <= 4)) {
@@ -234,8 +244,10 @@ public:
 		m_sock = INVALID_SOCKET;
 	}
 	void UpdateAddress(int nIP, int nPort) {
-		m_nIP = nIP;
-		m_nPort = nPort;
+		if ((m_nIP != nIP) || (m_nPort != nPort)) {
+			m_nIP = nIP;
+			m_nPort = nPort;
+		}
 	}
 private:
 	std::list<CPacket> m_lstSend;
@@ -251,13 +263,14 @@ private:
 		m_nIP = ss.m_nIP;
 		m_nPort = ss.m_nPort;
 	}
-	CClientSocket() :m_nIP(INADDR_ANY), m_nPort(0) {
+	CClientSocket() :m_nIP(INADDR_ANY), m_nPort(0),m_sock(INVALID_SOCKET) {
 		if (InitSockEnv() == FALSE) {
 			MessageBox(NULL, _T("无法初始化套接字环境，请检查网络设置！"), _T("初始化错误！"), MB_OK | MB_ICONERROR);
 			exit(0);
 		}
 		m_buffer.resize(BUFFER_SIZE);
 		memset(m_buffer.data(), 0, BUFFER_SIZE);
+		
 	}
 	~CClientSocket() {
 		closesocket(m_sock);
@@ -282,6 +295,11 @@ private:
 			TRACE("CClientSocket has released!\r\n");
 		}
 	}
+	bool Send(const char* pData, int nSize) {
+		if (m_sock == -1)return false;
+		return send(m_sock, pData, nSize, 0) > 0;
+	}
+	bool Send(const CPacket& pack);
 	static CClientSocket* m_instance;
 	class CHelper {
 	public:

@@ -398,10 +398,10 @@ LRESULT CRemoteClientDlg::OnSendPacket(WPARAM wParam, LPARAM lParam)
 		//对方关闭了套接字
 	}
 	else {
-		CPacket* pPacket = (CPacket*)wParam;
-		if (pPacket != NULL) {
-			CPacket& head = *pPacket;
-			switch (pPacket->sCmd) {
+		if (wParam != NULL) {
+			CPacket head = *(CPacket*)wParam;
+			delete (CPacket*)wParam;
+			switch (head.sCmd) {
 			case 1: {//获取驱动信息
 				std::string drivers = head.strData;
 				std::string dr;
@@ -464,7 +464,7 @@ LRESULT CRemoteClientDlg::OnSendPacket(WPARAM wParam, LPARAM lParam)
 					index += head.strData.size();
 				}
 			}
-				break;
+				  break;
 			case 9:
 				TRACE("delete file done!\r\n");
 				break;

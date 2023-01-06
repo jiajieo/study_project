@@ -1,2 +1,6 @@
-﻿  RemoteClientDlg.cpp
+﻿  CWatchDialog.cpp
+  ClientController.cpp
+  RemoteClient.cpp
+  RemoteClientDlg.cpp
+  正在生成代码...
   RemoteClient.vcxproj -> E:\Remote-control\study_project\RemoteCtrl\Debug\RemoteClient.exe

@@ -157,7 +157,7 @@ private:
 		return TRUE;
 	}
 	static void releaseInstance() {
-		if (m_instance != NULL) {
+		if (m_instance != NULL) {//∑¿”˘–‘±‡≥Ã
 			CServerSocket* tmp = m_instance;
 			m_instance = NULL;
 			delete tmp;

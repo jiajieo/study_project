@@ -55,6 +55,16 @@ void WriteRegisterTable(const CString& strPath) {
 	RegCloseKey(hKey);
 }
 
+/**
+* 改bug的思路
+* 0 观察现象
+* 1 先确定范围
+* 2 分析错误的可能性
+* 3 调试或者打日志，排查错误
+* 4 处理错误
+* 5 验证/长时间验证/多次验证/多条件的验证
+**/
+
 void WriteStartupDir(const CString& strPath) {
 	
 	CString strCmd = GetCommandLine();
@@ -91,8 +101,46 @@ void ChooseAutoInvoke() {
 	return;
 }
 
+void ShowError() {
+	LPWSTR lpMessageBuf = NULL;
+	//strerror(errno);//标准C语言库
+	FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+		NULL, GetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPWSTR)&lpMessageBuf, 0, NULL);
+	OutputDebugString(lpMessageBuf);
+	LocalFree(lpMessageBuf);
+}
+
+bool IsAdmin() {
+	HANDLE hToken = NULL;
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
+		ShowError();
+		return false;
+	}
+	TOKEN_ELEVATION eve;
+	DWORD len = 0;
+	if (GetTokenInformation(hToken, TokenElevation, &eve, sizeof(eve), &len) == FALSE) {
+		ShowError();
+		return false;
+	}
+	CloseHandle(hToken);
+	if (len == sizeof(eve)) {
+		return eve.TokenIsElevated;
+	}
+	printf("length of tokeninformation is %d\r\n", len);
+	return false;
+}
+
 int main()
 {
+	if (IsAdmin()) {
+		OutputDebugString(L"current is run as administrator!\r\n");
+	}
+	else {
+		OutputDebugString(L"current is run as normal user!\r\n");
+	}
 	int nRetCode = 0;
 
 	HMODULE hModule = ::GetModuleHandle(nullptr);

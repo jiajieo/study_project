@@ -1,6 +1,9 @@
 #pragma once
+#include "Command.h"
 #include <wtypes.h>
 #include <string>
+#include <tchar.h>
+
 class CTroubleTool
 {
 public:

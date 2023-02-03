@@ -185,7 +185,6 @@
   <ItemGroup>
     <ClInclude Include="ClientController.h" />
     <ClInclude Include="ClientSocket.h" />
-    <ClInclude Include="CTroubleQueue.h" />
     <ClInclude Include="CWatchDialog.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -199,7 +198,6 @@
   <ItemGroup>
     <ClCompile Include="ClientController.cpp" />
     <ClCompile Include="ClientSocket.cpp" />
-    <ClCompile Include="CTroubleQueue.cpp" />
     <ClCompile Include="CWatchDialog.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

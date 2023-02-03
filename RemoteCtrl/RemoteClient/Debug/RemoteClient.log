@@ -1,16 +1,2 @@
-﻿  CTroubleQueue.cpp
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(17,11): error C2143: 语法错误: 缺少“;”(在“<”的前面)
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(39,2): message : 查看对正在编译的 类 模板 实例化“CTroubleQueue<T>”的引用
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(17,1): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(17,1): error C2238: 意外的标记位于“;”之前
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(18,9): error C3646: “m_hCompeletionPort”: 未知重写说明符
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(18,1): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(19,9): error C3646: “m_hThread”: 未知重写说明符
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(19,1): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(24,10): error C3646: “hEvent”: 未知重写说明符
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(30,1): message : 查看对正在编译的 类 模板 实例化“CTroubleQueue<T>::IocpParam”的引用
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(24,1): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-E:\Remote-control\study_project\RemoteCtrl\RemoteClient\CTroubleQueue.h(25,40): error C2061: 语法错误: 标识符“_beginthread_proc_type”
-  CWatchDialog.cpp
-  StatusDlg.cpp
-  正在生成代码...
+﻿  StatusDlg.cpp
+  RemoteClient.vcxproj -> E:\Remote-control\study_project\RemoteCtrl\Debug\RemoteClient.exe

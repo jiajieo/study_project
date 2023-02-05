@@ -45,7 +45,10 @@
     <ClInclude Include="Packet.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\RemoteClient\CTroubleQueue.h">
+    <ClInclude Include="TroubleThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TroubleServer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,6 +69,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Command.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TroubleServer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

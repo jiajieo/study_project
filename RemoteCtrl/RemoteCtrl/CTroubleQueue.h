@@ -2,6 +2,7 @@
 #include "pch.h"
 #include <atomic>
 #include <list>
+#include "TroubleThread.h"
 
 template<class T>
 class CTroubleQueue
@@ -39,7 +40,7 @@ public:
 			);
 		}
 	}
-	~CTroubleQueue() {
+	virtual  ~CTroubleQueue() {
 		if (m_lock)return;
 		m_lock = true;
 		PostQueuedCompletionStatus(m_hCompeletionPort, 0, NULL, NULL);
@@ -61,7 +62,7 @@ public:
 		//printf("push back done %d %08p\r\n", ret, (void*)pParam);
 		return ret;
 	}
-	bool PopFront(T& data) {
+	virtual bool PopFront(T& data) {
 		HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 		IocpParam Param(EQPop, data, hEvent);
 		if (m_lock) {
@@ -105,13 +106,13 @@ public:
 		//printf("clear %08p\r\n", (void*)pParam);
 		return ret;
 	}
-private:
+protected:
 	static void threadEntry(void* arg) {
 		CTroubleQueue<T>* thiz = (CTroubleQueue<T>*)arg;
 		thiz->threadMain();
 		_endthread();
 	}
-	void DealParam(PPARAM* pParam) {
+	virtual void DealParam(PPARAM* pParam) {
 		switch (pParam->nOperator) {
 		case EQPush:
 			m_lstData.push_back(pParam->Data);
@@ -139,7 +140,7 @@ private:
 			break;
 		}
 	}
-	void threadMain() {
+	virtual void threadMain() {
 		DWORD dwTransferred = 0;
 		PPARAM* pParam = NULL;
 		ULONG_PTR CompletionKey = 0;
@@ -173,10 +174,87 @@ private:
 		m_hCompeletionPort = NULL;
 		CloseHandle(hTemp);
 	}
-private:
+protected:
 	std::list<T> m_lstData;
 	HANDLE m_hCompeletionPort;
 	HANDLE m_hThread;
 	std::atomic<bool> m_lock;//队列正在析构
 };
 
+template<class T>
+class TroubleSendQueue :public CTroubleQueue<T>, public ThreadFuncBase
+{
+public:
+	typedef int (ThreadFuncBase::* EDYCALLBACK)(T& data);
+	TroubleSendQueue(ThreadFuncBase* obj, EDYCALLBACK callback)
+		:CTroubleQueue<T>(), m_base(obj), m_callback(callback)
+	{
+		m_thread.Start();
+		m_thread.UpdateWorker(::ThreadWorker(this, (FUNCTYPE)&TroubleSendQueue<T>::threadTick));
+	}
+	virtual ~TroubleSendQueue(){
+		m_base = NULL;
+		m_callback = NULL;
+		m_thread.Stop();
+	}
+protected:
+	virtual bool PopFront(T& data) {
+		return false;
+	}
+	bool PopFront() {
+		typename CTroubleQueue<T>::IocpParam* Param = new typename CTroubleQueue<T>::IocpParam(CTroubleQueue<T>::EQPop, T());
+		if (CTroubleQueue<T>::m_lock) {
+			delete Param;
+			return false;
+		}
+		bool ret = PostQueuedCompletionStatus(CTroubleQueue<T>::m_hCompeletionPort, sizeof(*Param), (ULONG_PTR)&Param, NULL);
+		if (ret == false) {
+			delete Param;
+			return false;
+		}
+		return ret;
+	}
+	int threadTick() {
+		if (WaitForSingleObject(CTroubleQueue<T>::m_hThread, 0) != WAIT_TIMEOUT)
+			return 0;
+		if (CTroubleQueue<T>::m_lstData.size() > 0) {
+			PopFront();
+		}
+		return 0;
+	}
+	virtual void DealParam(typename CTroubleQueue<T>::PPARAM* pParam) {
+		switch (pParam->nOperator) {
+		case CTroubleQueue<T>::EQPush:
+			CTroubleQueue<T>::m_lstData.push_back(pParam->Data);
+			delete pParam;
+			//printf("delete %08p\r\n", (void*)pParam);
+			break;
+		case CTroubleQueue<T>::EQPop:
+			if (CTroubleQueue<T>::m_lstData.size() > 0) {
+				pParam->Data = CTroubleQueue<T>::m_lstData.front();
+				if ((m_base->*m_callback)(pParam->Data) == 0)
+					CTroubleQueue<T>::m_lstData.pop_front();
+			}
+			delete pParam;
+			break;
+		case CTroubleQueue<T>::EQSize:
+			pParam->nOperator = CTroubleQueue<T>::m_lstData.size();
+			if (pParam->hEvent != NULL)SetEvent(pParam->hEvent);
+			break;
+		case CTroubleQueue<T>::EQClear:
+			CTroubleQueue<T>::m_lstData.clear();
+			delete pParam;
+			//printf("delete %08p\r\n", (void*)pParam);
+			break;
+		default:
+			OutputDebugStringA("unknown operator!\r\n");
+			break;
+		}
+	}
+private:
+	ThreadFuncBase* m_base;
+	EDYCALLBACK m_callback;
+	TroubleThread m_thread;
+};
+
+typedef TroubleSendQueue<std::vector<char>>::EDYCALLBACK SENDCALLBACK;

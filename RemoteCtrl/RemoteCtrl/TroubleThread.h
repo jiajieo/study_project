@@ -31,7 +31,7 @@ public:
 		}
 		return -1;
 	}
-	bool IsValid() const{
+	bool IsValid() const {
 		return (thiz != NULL) && (func != NULL);
 	}
 private:
@@ -44,6 +44,7 @@ class TroubleThread
 public:
 	TroubleThread() {
 		m_hThread = NULL;
+		m_bStatus = false;
 	}
 
 	~TroubleThread() {
@@ -68,41 +69,52 @@ public:
 	bool Stop() {
 		if (m_bStatus == false)return true;
 		m_bStatus = false;
-		bool ret= WaitForSingleObject(m_hThread, INFINITE) == WAIT_OBJECT_0;
+		DWORD ret = WaitForSingleObject(m_hThread, 1000);
+		if (ret == WAIT_TIMEOUT) {
+			TerminateThread(m_hThread, -1);
+		}
 		UpdateWorker();
-		return ret;
+		return ret== WAIT_OBJECT_0;
 	}
 
-	void UpdateWorker(const ::ThreadWorker& worker=::ThreadWorker()) {
-		if (!worker.IsValid()) {
-			m_worker.store(NULL);
-			return;
-		}
-		if (m_worker.load() != NULL) {
+	void UpdateWorker(const ::ThreadWorker& worker = ::ThreadWorker()) {
+		if (m_worker.load() != NULL&&(m_worker.load()!=&worker)) {
 			::ThreadWorker* pWorker = m_worker.load();
 			m_worker.store(NULL);
 			delete pWorker;
+		}
+		if ((m_worker.load() == &worker))return;
+		if (!worker.IsValid()) {
+			m_worker.store(NULL);
+			return;
 		}
 		m_worker.store(new ::ThreadWorker(worker));
 	}
 
 	//true表示空闲 false表示已经分配了工作
 	bool IsIdle() {
+		if (m_worker.load() == NULL)return true;
 		return !m_worker.load()->IsValid();
 	}
 private:
 	void ThreadWorker() {
 		while (m_bStatus) {
+			if (m_worker.load() == NULL) {
+				Sleep(1);
+				continue;
+			}
 			::ThreadWorker worker = *m_worker.load();
 			if (worker.IsValid()) {
-				int ret = worker();
-				if (ret != 0) {
-					CString str;
-					str.Format(_T("thread found warning code %d\r\n"), ret);
-					OutputDebugString(str);
-				}
-				if (ret < 0) {
-					m_worker.store(NULL);
+				if (WaitForSingleObject(m_hThread, 0) == WAIT_TIMEOUT) {
+					int ret = worker();
+					if (ret != 0) {
+						CString str;
+						str.Format(_T("thread found warning code %d\r\n"), ret);
+						OutputDebugString(str);
+					}
+					if (ret < 0) {
+						m_worker.store(NULL);
+					}
 				}
 			}
 			else {
@@ -131,9 +143,13 @@ public:
 			m_threads[i] = new TroubleThread();
 		}
 	}
-	TroubleThreadPool(){}
+	TroubleThreadPool() {}
 	~TroubleThreadPool() {
 		Stop();
+		for (size_t i = 0; i < m_threads.size(); i++) {
+			delete m_threads[i];
+			m_threads[i] = NULL;
+		}
 		m_threads.clear();
 	}
 	bool Invoke() {

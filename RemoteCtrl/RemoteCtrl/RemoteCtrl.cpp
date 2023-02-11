@@ -83,14 +83,14 @@ int main(int argc, char* argv[])
 				CloseHandle(pi.hProcess);
 				TRACE("进程ID:%d\r\n", pi.dwProcessId);
 				TRACE("线程ID:%d\r\n", pi.dwThreadId);
-				udp_server();
+				udp_server();//服务器代码
 			}
 		}
 	}
-	else if (argc == 2) {
+	else if (argc == 2) {//就是主客户端
 		udp_client();
 	}
-	else {
+	else {//从客户端
 		udp_client(false);
 	}
 

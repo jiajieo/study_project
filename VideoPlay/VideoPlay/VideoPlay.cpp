@@ -30,14 +30,14 @@ int main()
 			break;
 		}
 		//只有media解析加载完成，才会有下面的参数
-		libvlc_time_t tm = libvlc_media_player_get_length(player);//获取时长
-		printf("%02d:%02d:%02d.%03d\r\n", int(tm / 3600000), int(tm / 60000) % 60, int(tm / 1000) % 60, int(tm / 1000));//获得时分秒
 		int vol = -1;
 		while (vol == -1) {
 			Sleep(10);
 			vol = libvlc_audio_get_volume(player);
 		}
 		printf("volume is %d\r\n", vol);
+		libvlc_time_t tm = libvlc_media_player_get_length(player);//获取时长
+		printf("%02d:%02d:%02d.%03d\r\n", int(tm / 3600000), int(tm / 60000) % 60, int(tm / 1000) % 60, int(tm / 1000));//获得时分秒
 		getchar();
 		libvlc_audio_set_volume(player, 60);
 		int width = libvlc_video_get_width(player);

@@ -385,10 +385,10 @@
 <XPD:REF name="CallActions[1]">KOV+vWwlsUCvK+4O8QKBQwAA</XPD:REF>
 </XPD:OBJ>
 <XPD:OBJ name="Operations[4]" type="UMLOperation" guid="Yfl/JgOuZkWq+C0vccxO6gAA">
-<XPD:ATTR name="Name" type="string">SetPostion</XPD:ATTR>
+<XPD:ATTR name="Name" type="string">SetPosition</XPD:ATTR>
 <XPD:REF name="Owner">2N61NNc9oki3RF3nc+QsfwAA</XPD:REF>
 <XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="Ai6+hfquuEeC14KhZeKiZQAA">
+<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="LVzzzCBMqkSxJKZwNgnRawAA">
 <XPD:ATTR name="Name" type="string">Pos</XPD:ATTR>
 <XPD:ATTR name="TypeExpression" type="string">float</XPD:ATTR>
 <XPD:REF name="BehavioralFeature">Yfl/JgOuZkWq+C0vccxO6gAA</XPD:REF>
@@ -527,10 +527,10 @@
 </XPD:OBJ>
 </XPD:OBJ>
 <XPD:OBJ name="Operations[5]" type="UMLOperation" guid="UaAb5fwsMkG6HiABktM49wAA">
-<XPD:ATTR name="Name" type="string">GetPostion</XPD:ATTR>
+<XPD:ATTR name="Name" type="string">GetPosition</XPD:ATTR>
 <XPD:REF name="Owner">nUl32T57UEiicfEYsjrW6QAA</XPD:REF>
 <XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="r285EoM2dUSKwQ0ne0DQJQAA">
+<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="KyYt4gQpmESQB3WGvc8wiQAA">
 <XPD:ATTR name="DirectionKind" type="UMLParameterDirectionKind">pdkReturn</XPD:ATTR>
 <XPD:ATTR name="TypeExpression" type="string">float</XPD:ATTR>
 <XPD:REF name="BehavioralFeature">UaAb5fwsMkG6HiABktM49wAA</XPD:REF>
@@ -539,10 +539,10 @@
 <XPD:REF name="CallActions[0]">qVdLdmbLe0+J4PHK1KZ4ZgAA</XPD:REF>
 </XPD:OBJ>
 <XPD:OBJ name="Operations[6]" type="UMLOperation" guid="4BCorwmQVUu+2PD3PWommQAA">
-<XPD:ATTR name="Name" type="string">SetPostion</XPD:ATTR>
+<XPD:ATTR name="Name" type="string">SetPosition</XPD:ATTR>
 <XPD:REF name="Owner">nUl32T57UEiicfEYsjrW6QAA</XPD:REF>
 <XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="w7GkHNDE202hzeFdhGJvjQAA">
+<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="2S++9edFZ06AH2tJF9wR/QAA">
 <XPD:ATTR name="Name" type="string">pos</XPD:ATTR>
 <XPD:ATTR name="TypeExpression" type="string">float</XPD:ATTR>
 <XPD:REF name="BehavioralFeature">4BCorwmQVUu+2PD3PWommQAA</XPD:REF>
@@ -563,8 +563,13 @@
 <XPD:OBJ name="Operations[8]" type="UMLOperation" guid="XqoPmP0uuEicsOup6yTufAAA">
 <XPD:ATTR name="Name" type="string">SetVolume</XPD:ATTR>
 <XPD:REF name="Owner">nUl32T57UEiicfEYsjrW6QAA</XPD:REF>
-<XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="jmT1nUZKyUanedyxlkYMUwAA">
+<XPD:ATTR name="#Parameters" type="integer">2</XPD:ATTR>
+<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="l+1KfpVLmEaqsflkteZsIAAA">
+<XPD:ATTR name="DirectionKind" type="UMLParameterDirectionKind">pdkReturn</XPD:ATTR>
+<XPD:ATTR name="TypeExpression" type="string">int</XPD:ATTR>
+<XPD:REF name="BehavioralFeature">XqoPmP0uuEicsOup6yTufAAA</XPD:REF>
+</XPD:OBJ>
+<XPD:OBJ name="Parameters[1]" type="UMLParameter" guid="1XlNSYcYok2rLBSZIqAZ4gAA">
 <XPD:ATTR name="Name" type="string">volume</XPD:ATTR>
 <XPD:ATTR name="TypeExpression" type="string">int</XPD:ATTR>
 <XPD:REF name="BehavioralFeature">XqoPmP0uuEicsOup6yTufAAA</XPD:REF>
@@ -1261,7 +1266,7 @@
 <XPD:OBJ name="NameLabel" type="EdgeLabelView" guid="sfCQW2/zB0mtAQRM9aGcLgAA">
 <XPD:ATTR name="Alpha" type="real">1.5707963267949</XPD:ATTR>
 <XPD:ATTR name="Distance" type="real">10</XPD:ATTR>
-<XPD:ATTR name="Text" type="string">13 : GetPostion()</XPD:ATTR>
+<XPD:ATTR name="Text" type="string">13 : GetPosition()</XPD:ATTR>
 <XPD:REF name="Model">mGh59AcpPk2u9fqUFS3EuAAA</XPD:REF>
 <XPD:REF name="HostEdge">/hjvDCL4kkS6BY3fFlS/tQAA</XPD:REF>
 </XPD:OBJ>
@@ -1657,7 +1662,7 @@
 <XPD:OBJ name="NameLabel" type="EdgeLabelView" guid="eQ68B7J/9kmntF5Z93tPtwAA">
 <XPD:ATTR name="Alpha" type="real">1.5707963267949</XPD:ATTR>
 <XPD:ATTR name="Distance" type="real">10</XPD:ATTR>
-<XPD:ATTR name="Text" type="string">24 : SetPostion()</XPD:ATTR>
+<XPD:ATTR name="Text" type="string">24 : SetPosition()</XPD:ATTR>
 <XPD:REF name="Model">tujcFfADHEejovOfN1SxXgAA</XPD:REF>
 <XPD:REF name="HostEdge">Xa4bUDzeb0qNAlYVqmVmsgAA</XPD:REF>
 </XPD:OBJ>
@@ -1693,7 +1698,7 @@
 <XPD:OBJ name="NameLabel" type="EdgeLabelView" guid="6f15Bvgq60qSq8Knh7TJGwAA">
 <XPD:ATTR name="Alpha" type="real">1.5707963267949</XPD:ATTR>
 <XPD:ATTR name="Distance" type="real">10</XPD:ATTR>
-<XPD:ATTR name="Text" type="string">25 : SetPostion()</XPD:ATTR>
+<XPD:ATTR name="Text" type="string">25 : SetPosition()</XPD:ATTR>
 <XPD:REF name="Model">Yeon4SL+T0eOuVUgo7mviwAA</XPD:REF>
 <XPD:REF name="HostEdge">eL2j4UZtmk2Fz5voGmRixwAA</XPD:REF>
 </XPD:OBJ>

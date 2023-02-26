@@ -33,6 +33,15 @@
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="EVlc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoClientController.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TVlc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VideoClient.cpp">
@@ -42,6 +51,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="EVlc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoClientController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TVlc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

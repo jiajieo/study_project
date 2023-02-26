@@ -12,6 +12,7 @@
 #define IDC_EDIT_URL                    1005
 #define IDC_STATIC_VOLUME               1006
 #define IDC_STATIC_TIME                 1007
+#define IDC_SLIDER_POS2                 1008
 
 // Next default values for new objects
 // 
